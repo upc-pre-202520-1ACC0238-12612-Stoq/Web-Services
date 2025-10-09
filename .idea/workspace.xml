@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f280e8ff-da81-4d2d-b45d-83589d81dd61" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Application/Internal/CommandServices/CategoryReportCommandService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Application/Internal/CommandServices/StockAverageReportCommandService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Application/Internal/QueryServices/StockAverageReportQueryService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Commands/CreateCategoryReportCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Commands/CreateStockAverageReportCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetAllCategoryReportsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetAllStockAverageReportsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetCategoryReportByIdQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetCategoryReportsByDateQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetStockAverageReportByIdQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetStockAverageReportsByDateQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/CategoryName.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/ProductName.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/ReportDate.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/ReportType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/StockStatus.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Repositories/IStockAverageReportRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Services/ICategoryReportCommandService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Services/IStockAverageReportCommandService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Services/IStockAverageReportQueryService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Infrastructure/Persistence/EFC/Repositories/StockAverageReportRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/ReportController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/GeneralReportResource.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/StockAverageReportResource.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/CategoryReportResourceAssembler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/CreateCategoryReportCommandAssembler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/CreateStockAverageReportCommandAssembler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/StockAverageReportResourceAssembler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Application/Internal/CommandServices/ReportCommandService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Application/Internal/QueryServices/CategoryReportQueryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Application/Internal/QueryServices/CategoryReportQueryService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Application/Internal/QueryServices/ReportQueryService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Application/Internal/QueryServices/StockAverageQueryService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Aggregates/CategoryReport.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Aggregates/CategoryReport.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Aggregates/Report.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Aggregates/StockAverageReport.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Aggregates/StockAverageReport.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Commands/CreateReportCommand.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetReportsByCategoryQuery.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetReportsByDateQuery.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetReportsByProductQuery.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/Queries/GetStockAverageQuery.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/ReportField.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/ReportFilter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Model/ValueObjects/StockAverage.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Repositories/ICategoryReportRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Repositories/ICategoryReportRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Repositories/IReportRepository.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Services/ICategoryReportQueryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Domain/Services/ICategoryReportQueryService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Services/IReportCommandService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Services/IReportQueryService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Domain/Services/IStockAverageQueryService.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Infrastructure/Persistence/EFC/Repositories/CategoryReportRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Infrastructure/Persistence/EFC/Repositories/CategoryReportRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Infrastructure/Persistence/EFC/Repositories/ReportRepository.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Controllers/ReportController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/CategoryReportResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/CategoryReportResource.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/CreateReportResource.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/ReportResource.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Resources/StockAverageResource.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/CategoryReportResourceFromEntityAssembler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/ReportResourceFromEntityAssembler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Reports/Interfaces/REST/Transform/StockAverageResourceFromEntityAssembler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/Shared/Infraestructure/Persistence/EFC/Configuration/Extensions/AppDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/Shared/Infraestructure/Persistence/EFC/Configuration/Extensions/AppDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/Lot.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/bin/Debug/net9.0/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.MvcApplicationPartsAssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.MvcApplicationPartsAssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/Lot.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/apphost.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/ref/Lot.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/ref/Lot.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/refint/Lot.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Debug/net9.0/refint/Lot.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Lot.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Lot.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/Lot.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/Lot.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lot/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Lot/obj/rider.project.restore.info" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2zNEtVVskVGQbyVoEoAY1ZsHWb9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/aCer/Downloads/Ciclo 5/1. Desarrollo de Aplicaciones de Open Source/MisProyecto/Aplicaciones Web/Repositorio/Backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-WS-251.23774.424" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f280e8ff-da81-4d2d-b45d-83589d81dd61" name="Changes" comment="" />
+      <created>1751563345929</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751563345929</updated>
+      <workItem from="1751563347183" duration="417000" />
+      <workItem from="1751594852221" duration="1356000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

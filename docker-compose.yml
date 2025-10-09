@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aynitech-db
+    environment:
+      POSTGRES_DB: aynitech
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: movilesMarquet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks: [aynitech-net]
+
+  api:
+    image: asmip/aynitech-api:1.0.6   # <--- pon aquí tu última tag
+    container_name: aynitech-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"         # solo accesible dentro de la VM
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=aynitech;Username=postgres;Password=movilesMarquet
+      TokenSettings__Secret: "839174620915020242025"
+      Swagger__Enabled: "true"        # habilita Swagger en prod (ruta /swagger)
+    restart: unless-stopped
+    networks: [aynitech-net]
+
+volumes:
+  postgres_data:
+
+networks:
+  aynitech-net: { driver: bridge }

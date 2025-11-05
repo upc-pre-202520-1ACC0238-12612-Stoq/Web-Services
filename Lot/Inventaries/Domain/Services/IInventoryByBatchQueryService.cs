@@ -8,4 +8,5 @@ namespace Lot.Inventaries.Domain.Services;
 public interface IInventoryByBatchQueryService
 {
     Task<IEnumerable<InventoryByBatch>> Handle(GetInventoryByBatchQuery query);
+    Task<InventoryByBatch?> GetByIdAsync(int id);
 }

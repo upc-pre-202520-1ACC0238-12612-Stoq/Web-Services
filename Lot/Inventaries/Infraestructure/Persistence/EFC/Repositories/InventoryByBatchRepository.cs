@@ -21,6 +21,11 @@ namespace Lot.Inventaries.Infraestructure.Persistence.EFC.Repositories
             return await _context.Set<InventoryByBatch>().ToListAsync();
         }
 
+        public async Task<InventoryByBatch?> FindByIdAsync(int id)
+        {
+            return await _context.Set<InventoryByBatch>().FindAsync(id);
+        }
+
         public async Task AddAsync(InventoryByBatch batch)
         {
             await _context.Set<InventoryByBatch>().AddAsync(batch);

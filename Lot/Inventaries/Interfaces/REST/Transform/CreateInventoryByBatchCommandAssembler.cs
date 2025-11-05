@@ -7,7 +7,7 @@ namespace Lot.Inventaries.Interfaces.REST.Transform;
 
 public static class CreateInventoryByBatchCommandAssembler
 {
-    public static CreateInventoryByBatchCommand ToCommand(CreateInventoryByBatchResource resource)
+    public static CreateInventoryByBatchCommand ToCommandFromResource(CreateInventoryByBatchResource resource)
     {
         return new CreateInventoryByBatchCommand(
             resource.Proveedor,

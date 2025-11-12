@@ -58,6 +58,9 @@ public partial class Product
         CategoryId = command.CategoryId;
         UnitId = command.UnitId;
         ProductTags = new List<ProductTag>();
+
+        // Los tags se agregarán después de que el producto tenga ID
+        // en el ProductCommandService para evitar el problema de ProductId = 0
     }
 
     public void UpdateProduct(string name, string description, decimal purchasePrice, decimal salePrice, 
@@ -74,9 +77,14 @@ public partial class Product
 
     public void AddTag(int tagId)
     {
+        // Validar que el tag no esté ya asignado
         if (ProductTags.Any(pt => pt.TagId == tagId))
             return;
-        
+
+        // Validar que el producto tenga ID asignado
+        if (Id <= 0)
+            throw new InvalidOperationException("Cannot add tags to a product that has not been persisted yet.");
+
         ProductTags.Add(new ProductTag(Id, tagId));
     }
 

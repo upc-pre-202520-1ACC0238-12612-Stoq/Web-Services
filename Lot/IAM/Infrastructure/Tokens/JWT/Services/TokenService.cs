@@ -9,9 +9,24 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Lot.IAM.Infrastructure.Tokens.JWT.Services
 {
-    public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
+    public class TokenService : ITokenService
     {
-        private readonly TokenSettings _tokenSettings = tokenSettings.Value;
+        private readonly TokenSettings _tokenSettings;
+
+        public TokenService(IOptions<TokenSettings> tokenSettings)
+        {
+            _tokenSettings = tokenSettings.Value;
+
+            // Constructor validation
+            if (_tokenSettings == null || string.IsNullOrEmpty(_tokenSettings.Secret))
+            {
+                throw new ArgumentNullException(nameof(tokenSettings), "TokenSettings.Secret cannot be null or empty");
+            }
+
+            Console.WriteLine("🔐 TokenSettings validado correctamente");
+            Console.WriteLine($"🔑 Secret length: {_tokenSettings.Secret.Length} characters");
+            Console.WriteLine($"🔍 Secret preview: {_tokenSettings.Secret.Substring(0, Math.Min(10, _tokenSettings.Secret.Length))}...");
+        }
 
         public string GenerateToken(User user)
         {
@@ -49,8 +64,26 @@ namespace Lot.IAM.Infrastructure.Tokens.JWT.Services
 
             var tokenHandler = new JsonWebTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            
+
             Console.WriteLine("✅ Token generado exitosamente");
+            Console.WriteLine($"📏 Token length: {token.Length} characters");
+            Console.WriteLine($"🎯 Token format validation: {(token.Contains('.') ? "✅ Valid JWT format" : "❌ Invalid JWT format")}");
+
+            // Validar que el token tenga el formato correcto (header.payload.signature)
+            if (!token.Contains('.'))
+            {
+                Console.WriteLine("❌ ERROR CRÍTICO: El token no tiene el formato JWT correcto (debe contener puntos)");
+                throw new Exception("Generated token is not in valid JWT format");
+            }
+
+            var tokenParts = token.Split('.');
+            Console.WriteLine($"🔍 Token parts count: {tokenParts.Length} (debe ser 3)");
+            if (tokenParts.Length != 3)
+            {
+                Console.WriteLine($"❌ ERROR: Token debe tener 3 partes, pero tiene {tokenParts.Length}");
+                throw new Exception($"Generated token has {tokenParts.Length} parts instead of 3");
+            }
+
             return token;
         }
 

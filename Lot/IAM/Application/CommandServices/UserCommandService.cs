@@ -33,13 +33,46 @@ namespace Lot.IAM.Application.CommandServices
 
         public async Task<(User?, string)> Handle(SignInCommand command)
         {
+            Console.WriteLine("🔍 Buscando usuario");
             var user = await userRepository.FindByEmailAsync(command.Email);
-            
-            if (user == null || !hashingService.VerifyHash(command.Password, user.Password))
+
+            if (user == null)
+            {
+                Console.WriteLine("❌ Usuario no encontrado en la base de datos");
                 throw new Exception("Invalid credentials");
-            
-            var token = tokenService.GenerateToken(user);
-            return (user, token);
+            }
+
+            Console.WriteLine("👤 Usuario encontrado, verificando contraseña...");
+            bool isPasswordValid = hashingService.VerifyHash(command.Password, user.Password);
+
+            if (!isPasswordValid)
+            {
+                Console.WriteLine("❌ Contraseña incorrecta");
+                throw new Exception("Invalid credentials");
+            }
+
+            Console.WriteLine("✅ Contraseña verificada, generando token...");
+            try
+            {
+                var token = tokenService.GenerateToken(user);
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    Console.WriteLine("❌ Error: Token generado es nulo o vacío");
+                    throw new Exception("Token generation failed");
+                }
+
+                Console.WriteLine("🔑 Token generado correctamente");
+                Console.WriteLine($"📏 Longitud del token: {token.Length} caracteres");
+                Console.WriteLine($"🔍 Formato del token (primeros 50 chars): {token.Substring(0, Math.Min(50, token.Length))}...");
+
+                return (user, token);
+            }
+            catch (Exception tokenEx)
+            {
+                Console.WriteLine($"❌ Error generando token: {tokenEx.Message}");
+                throw new Exception($"Token generation failed: {tokenEx.Message}");
+            }
         }
 
         public async Task<User?> Handle(ChangeUserRoleCommand command)

@@ -3,10 +3,12 @@ namespace Lot.Reports.Interfaces.REST.Resources;
 
 public record StockAverageReportResource(
     int Id,
-    decimal StockPromedio,
-    string Categoria,
-    string Producto,
+    int CategoryId,
+    string CategoriaNombre,
     DateTime FechaConsulta,
-    decimal StockIdeal,
-    string Estado
+    decimal StockPromedioReal,
+    int StockMinimoPromedio,
+    int TotalProductos,
+    int ProductosBajoStock,
+    decimal PorcentajeBajoStock
 );

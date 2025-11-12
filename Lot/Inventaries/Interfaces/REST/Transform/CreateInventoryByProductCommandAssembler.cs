@@ -4,18 +4,20 @@ using Lot.Inventaries.Interfaces.REST.Resources;
 
 namespace Lot.Inventaries.Interfaces.REST.Transform;
 
+/// <summary>
+/// Assembler para transformar Resources a Commands.
+/// Convierte Resource a Command usando foreign key (ProductoId).
+/// </summary>
 public static class CreateInventoryByProductCommandAssembler
 {
     public static CreateInventoryByProductCommand ToCommandFromResource(CreateInventoryByProductResource resource)
     {
         return new CreateInventoryByProductCommand(
-            resource.Categoria,
-            resource.Producto,
-            resource.FechaEntrada,
-            new Cantidad(resource.Cantidad),
-            new Precio(resource.Precio),
-            new StockMinimo(resource.StockMinimo),
-            new Unidad(resource.UnidadMedida)
+            productoId: resource.ProductoId,
+            // ❌ fechaEntrada eliminada - ahora es automática
+            cantidad: new Cantidad(resource.Cantidad),
+            precio: new Precio(resource.Precio),
+            stockMinimo: new StockMinimo(resource.StockMinimo)
         );
     }
 }

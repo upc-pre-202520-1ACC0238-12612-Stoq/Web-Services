@@ -10,8 +10,15 @@ namespace Lot.IAM.Interfaces.REST
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class AuthenticationController(IUserCommandService userCommandService) : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
+        private readonly IUserCommandService _userCommandService;
+
+        public AuthenticationController(IUserCommandService userCommandService)
+        {
+            _userCommandService = userCommandService;
+        }
+
         [HttpPost("sign-up")]
         [SwaggerOperation(
             Summary = "Register a new user account",
@@ -26,7 +33,7 @@ namespace Lot.IAM.Interfaces.REST
         public async Task<ActionResult> SignUp([FromBody] SignUpResource resource)
         {
             var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
-            var result = await userCommandService.Handle(signUpCommand);
+            var result = await _userCommandService.Handle(signUpCommand);
 
             if (result is null) return BadRequest("Failed to create user account. Verify your details and try again.");
 
@@ -42,8 +49,9 @@ namespace Lot.IAM.Interfaces.REST
                 "Authenticates the user with provided credentials, returning a token and user information upon successful login.",
             OperationId = "SignIn"
         )]
-        [SwaggerResponse(201, "User authenticated successfully", typeof(AuthenticatedUserResource))]
+        [SwaggerResponse(200, "User authenticated successfully", typeof(AuthenticatedUserResource))]
         [SwaggerResponse(400, "Invalid login credentials.")]
+        [SwaggerResponse(401, "Authentication failed.")]
         [SwaggerResponse(500, "Unexpected error during authentication.")]
         [AllowAnonymous]
         public async Task<ActionResult> SignIn([FromBody] SignInResource resource)
@@ -51,28 +59,59 @@ namespace Lot.IAM.Interfaces.REST
             Console.WriteLine("🔑 Intento de inicio de sesión:");
             Console.WriteLine($"   Email: {resource.Email}");
 
-            var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
-            var authenticatedUser = await userCommandService.Handle(signInCommand);
-            
-            if (authenticatedUser.user is null)
+            try
             {
-                Console.WriteLine("❌ Fallo en la autenticación");
-                return BadRequest("Failed to authenticate user.");
-            }
+                var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
+                var authenticatedUser = await _userCommandService.Handle(signInCommand);
 
-            Console.WriteLine("✅ Usuario autenticado exitosamente:");
-            Console.WriteLine($"   ID: {authenticatedUser.user.Id}");
-            Console.WriteLine($"   Nombre: {authenticatedUser.user.Name}");
-            Console.WriteLine($"   Rol: {authenticatedUser.user.Role}");
-            
-            var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user, authenticatedUser.token);
-            return Ok(authenticatedUserResource);
+                if (authenticatedUser.user is null)
+                {
+                    Console.WriteLine("❌ Usuario no encontrado");
+                    return BadRequest("User not found.");
+                }
+
+                if (string.IsNullOrEmpty(authenticatedUser.token))
+                {
+                    Console.WriteLine("❌ Token generado está vacío o nulo");
+                    return StatusCode(500, "Failed to generate authentication token.");
+                }
+
+                Console.WriteLine("✅ Usuario autenticado exitosamente:");
+                Console.WriteLine($"   ID: {authenticatedUser.user.Id}");
+                Console.WriteLine($"   Nombre: {authenticatedUser.user.Name}");
+                Console.WriteLine($"   Rol: {authenticatedUser.user.Role}");
+
+                var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user, authenticatedUser.token);
+                return Ok(authenticatedUserResource);
+            }
+            catch (Exception ex) when (ex.Message == "Invalid credentials")
+            {
+                Console.WriteLine("❌ Credenciales inválidas");
+                return Unauthorized("Invalid email or password.");
+            }
+            catch (Exception ex) when (ex.Message.StartsWith("Token generation failed"))
+            {
+                Console.WriteLine("❌ Error en generación de token");
+                Console.WriteLine($"🔍 Detalle: {ex.Message}");
+                return StatusCode(500, "Token generation failed.");
+            }
+            catch (Exception ex) when (ex.Message == "User not found")
+            {
+                Console.WriteLine("❌ Usuario no encontrado");
+                return Unauthorized("Invalid email or password.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error inesperado en autenticación: {ex.Message}");
+                Console.WriteLine($"🔍 Stack trace: {ex.StackTrace}");
+                return StatusCode(500, "An unexpected error occurred during authentication.");
+            }
         }
 
         [HttpPut("change-role")]
         [SwaggerOperation(
             Summary = "Change user role",
-            Description = "Changes the role of a user between Employee and Administrator.",
+            Description = "Changes the role of a user using integer values: 0=Employee, 1=Administrator.",
             OperationId = "ChangeUserRole"
         )]
         [SwaggerResponse(200, "User role changed successfully", typeof(UserResource))]
@@ -82,7 +121,7 @@ namespace Lot.IAM.Interfaces.REST
         public async Task<ActionResult> ChangeUserRole([FromBody] ChangeUserRoleResource resource)
         {
             var changeRoleCommand = ChangeUserRoleCommandFromResourceAssembler.ToCommandFromResource(resource);
-            var result = await userCommandService.Handle(changeRoleCommand);
+            var result = await _userCommandService.Handle(changeRoleCommand);
 
             if (result is null) return BadRequest("Failed to change user role. User not found.");
 

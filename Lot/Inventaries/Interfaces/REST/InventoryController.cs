@@ -50,7 +50,7 @@ public class InventoryController : ControllerBase
 
         var response = new InventoryGeneralResource
         {
-            Productos = products.Select(p => InventoryByProductResourceAssembler.ToCommandFromResource(p)).ToList(),
+            Productos = products.Select(p => InventoryByProductResourceAssembler.ToResourceFromEntity(p)).ToList(),
             Lotes = batches.Select(b => InventoryByBatchResourceAssembler.ToResource(b)).ToList(),
         };
 
@@ -78,7 +78,7 @@ public class InventoryController : ControllerBase
                 return BadRequest("No se pudo crear el inventario. Verifique los datos proporcionados.");
 
             // Transform Entity → Resource para la respuesta
-            var responseResource = InventoryByProductResourceAssembler.ToCommandFromResource(result);
+            var responseResource = InventoryByProductResourceAssembler.ToResourceFromEntity(result);
 
             return CreatedAtAction(nameof(GetByProductById), new { id = result.Id }, responseResource);
         }
@@ -101,25 +101,31 @@ public class InventoryController : ControllerBase
         [FromQuery] DateTime? fechaEntrada,
         [FromQuery] int? stockMin)
     {
-        var result = await _productQueryService.GetAllAsync();
+        var entities = await _productQueryService.GetAllAsync();
+        var resources = entities.Select(InventoryByProductResourceAssembler.ToResourceFromEntity);
+
         if (!string.IsNullOrEmpty(categoria))
-            result = result.Where(x => x.Categoria == categoria);
+            resources = resources.Where(x => x.CategoriaNombre == categoria);
         if (!string.IsNullOrEmpty(producto))
-            result = result.Where(x => x.Producto == producto);
+            resources = resources.Where(x => x.ProductoNombre == producto);
         if (fechaEntrada.HasValue)
-            result = result.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
+            resources = resources.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
         if (stockMin.HasValue)
-            result = result.Where(x => x.StockMinimo <= stockMin.Value);
-        return Ok(result);
+            resources = resources.Where(x => x.StockMinimo <= stockMin.Value);
+        return Ok(resources);
     }
 
     [HttpGet("by-product/{id}")]
     [SwaggerOperation("Obtener Inventario por Producto por ID", OperationId = "GetInventoryByProductById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByProduct))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByProductResource))]
     public async Task<IActionResult> GetByProductById(int id)
     {
         var result = await _productQueryService.GetByIdAsync(id);
-        return result == null ? NotFound() : Ok(result);
+        if (result == null) return NotFound();
+
+        // ✅ Transformar Entity a Resource enriquecido
+        var resource = InventoryByProductResourceAssembler.ToResourceFromEntity(result);
+        return Ok(resource);
     }
 
     [HttpDelete("by-product/{id}")]
@@ -177,18 +183,20 @@ public class InventoryController : ControllerBase
         [FromQuery] int? cantidad,
         [FromQuery] decimal? precio)
     {
-        var result = await _batchQueryService.Handle(new GetInventoryByBatchQuery());
+        var entities = await _batchQueryService.Handle(new GetInventoryByBatchQuery());
+        var resources = entities.Select(InventoryByBatchResourceAssembler.ToResource);
+
         if (!string.IsNullOrEmpty(producto))
-            result = result.Where(x => x.Producto == producto);
+            resources = resources.Where(x => x.ProductoNombre == producto);
         if (!string.IsNullOrEmpty(proveedor))
-            result = result.Where(x => x.Proveedor == proveedor);
+            resources = resources.Where(x => x.Proveedor == proveedor);
         if (fechaEntrada.HasValue)
-            result = result.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
+            resources = resources.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
         if (cantidad.HasValue)
-            result = result.Where(x => x.Cantidad == cantidad.Value);
+            resources = resources.Where(x => x.Cantidad == cantidad.Value);
         if (precio.HasValue)
-            result = result.Where(x => x.Precio == precio.Value);
-        return Ok(result);
+            resources = resources.Where(x => x.Precio == precio.Value);
+        return Ok(resources);
     }
 
     [HttpGet("by-batch/{id}")]

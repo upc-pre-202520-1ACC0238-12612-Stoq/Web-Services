@@ -9,12 +9,14 @@ public static class StockAverageReportResourceAssembler
     {
         return new StockAverageReportResource(
             report.Id,
-            report.StockPromedio,
-            report.Categoria,
-            report.Producto,
+            report.CategoryId,
+            report.CategoriaNombre,
             report.FechaConsulta,
-            report.StockIdeal,
-            report.Estado
+            report.StockPromedioReal,
+            report.StockMinimoPromedio,
+            report.TotalProductos,
+            report.ProductosBajoStock,
+            report.PorcentajeBajoStock
         );
     }
 }

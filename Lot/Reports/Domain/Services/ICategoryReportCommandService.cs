@@ -6,5 +6,5 @@ namespace Lot.Reports.Domain.Services;
 
 public interface ICategoryReportCommandService
 {
-    Task<CategoryReport> Handle(CreateCategoryReportCommand command);
+    Task<CategoryReport?> Handle(CreateCategoryReportCommand command);
 }

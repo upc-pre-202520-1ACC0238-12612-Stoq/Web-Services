@@ -1,6 +1,7 @@
 using Lot.IAM.Domain.Model.Aggregates;
 using Lot.ProductManagement.Domain.Model.Aggregates;
 using Lot.Reports.Domain.Model.Aggregates;
+using Lot.Sales.Domain.Model.Aggregates;
 using Microsoft.EntityFrameworkCore;
 using Lot.Inventaries.Domain.Model.Aggregates;
 
@@ -29,7 +30,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<User>().Property(u => u.Name).IsRequired();
         builder.Entity<User>().Property(u => u.LastName).IsRequired();
         builder.Entity<User>().Property(u => u.Password).IsRequired();
-        builder.Entity<User>().Property(u => u.Email).IsRequired();
+        builder.Entity<User>().Property(u => u.Email).IsRequired().HasMaxLength(255);
+
+        // Agregar índice único para email (evita duplicados)
+        builder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique()
+            .HasDatabaseName("IX_Users_Email_Unique");
 
         // Configuración de Inventory
         //by-product
@@ -38,11 +45,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<InventoryByProduct>().Property(p => p.Id)
             .IsRequired().ValueGeneratedOnAdd();
 
-        builder.Entity<InventoryByProduct>().Property(p => p.Categoria)
-            .HasColumnName("Categoria").IsRequired().HasMaxLength(100);
-
-        builder.Entity<InventoryByProduct>().Property(p => p.Producto)
-            .HasColumnName("Producto").IsRequired().HasMaxLength(100);
+        // FK y campos principales
+        builder.Entity<InventoryByProduct>().Property(p => p.ProductoId)
+            .HasColumnName("ProductoId");
 
         builder.Entity<InventoryByProduct>().Property(p => p.FechaEntrada)
             .HasColumnName("FechaEntrada").HasColumnType("timestamp(6)");
@@ -56,10 +61,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<InventoryByProduct>().Property(p => p.StockMinimo)
             .HasColumnName("StockMinimo");
 
-        builder.Entity<InventoryByProduct>().Property(p => p.UnidadMedida)
-            .HasColumnName("UnidadMedida").HasMaxLength(50);
-
         builder.Entity<InventoryByProduct>().ToTable("inventory_by_product");
+
+        // NUEVO: Relación con Products (si existe FK)
+        builder.Entity<InventoryByProduct>()
+            .HasOne(p => p.Product)
+            .WithMany()
+            .HasForeignKey(p => p.ProductoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // NUEVO: Índice para mejor performance en FK (compatible con múltiples BD)
+        builder.Entity<InventoryByProduct>()
+            .HasIndex(p => p.ProductoId)
+            .HasDatabaseName("IX_InventoryByProduct_ProductoId");
 
         //by-bach
         builder.Entity<InventoryByBatch>().HasKey(b => b.Id);
@@ -67,12 +81,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<InventoryByBatch>().Property(b => b.Id)
             .IsRequired().ValueGeneratedOnAdd();
 
+        // NUEVO: Foreign Key a Products
+        builder.Entity<InventoryByBatch>().Property(b => b.ProductoId)
+            .HasColumnName("ProductoId");
+
         builder.Entity<InventoryByBatch>().Property(b => b.Proveedor)
             .HasColumnName("Proveedor").IsRequired().HasMaxLength(100);
 
-        builder.Entity<InventoryByBatch>().Property(b => b.Producto)
-            .HasColumnName("Producto").IsRequired().HasMaxLength(100);
+        // NUEVO: Foreign Key a Units
+        builder.Entity<InventoryByBatch>().Property(b => b.UnidadId)
+            .HasColumnName("UnidadId");
 
+        
         builder.Entity<InventoryByBatch>().Property(b => b.FechaEntrada)
             .HasColumnName("FechaEntrada").HasColumnType("timestamp(6)");
 
@@ -82,12 +102,33 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<InventoryByBatch>().Property(b => b.Precio)
             .HasColumnName("Precio").HasColumnType("decimal(10,2)");
 
-        builder.Entity<InventoryByBatch>().Property(b => b.Unidad)
-            .HasColumnName("Unidad").HasMaxLength(50);
-
+        
         builder.Entity<InventoryByBatch>().Ignore(b => b.Total); // Propiedad calculada
 
         builder.Entity<InventoryByBatch>().ToTable("inventory_by_batch");
+
+        // NUEVO: Relación con Products (si existe FK)
+        builder.Entity<InventoryByBatch>()
+            .HasOne(b => b.Product)
+            .WithMany()
+            .HasForeignKey(b => b.ProductoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // NUEVO: Relación con Units
+        builder.Entity<InventoryByBatch>()
+            .HasOne(b => b.Unit)
+            .WithMany()
+            .HasForeignKey(b => b.UnidadId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // NUEVO: Índices para mejor performance en FKs (compatible con múltiples BD)
+        builder.Entity<InventoryByBatch>()
+            .HasIndex(b => b.ProductoId)
+            .HasDatabaseName("IX_InventoryByBatch_ProductoId");
+
+        builder.Entity<InventoryByBatch>()
+            .HasIndex(b => b.UnidadId)
+            .HasDatabaseName("IX_InventoryByBatch_UnidadId");
 
 
         
@@ -172,23 +213,26 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // Reports - CategoryReport
         builder.Entity<CategoryReport>().HasKey(r => r.Id);
         builder.Entity<CategoryReport>().Property(r => r.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Entity<CategoryReport>().Property(r => r.Categoria).IsRequired().HasMaxLength(100);
-        builder.Entity<CategoryReport>().Property(r => r.Producto).IsRequired().HasMaxLength(100);
+        builder.Entity<CategoryReport>().Property(r => r.CategoryId).IsRequired();
+        builder.Entity<CategoryReport>().Property(r => r.CategoriaNombre).IsRequired().HasMaxLength(100);
         builder.Entity<CategoryReport>().Property(r => r.FechaConsulta).IsRequired();
-        builder.Entity<CategoryReport>().Property(r => r.PrecioUnitario).HasColumnType("decimal(10,2)");
-        builder.Entity<CategoryReport>().Property(r => r.Cantidad).IsRequired();
-        builder.Entity<CategoryReport>().Ignore(r => r.Total); // Es propiedad calculada
+        builder.Entity<CategoryReport>().Property(r => r.TotalProductos).IsRequired();
+        builder.Entity<CategoryReport>().Property(r => r.StockTotal).IsRequired();
+        builder.Entity<CategoryReport>().Property(r => r.ValorTotalInventario).HasColumnType("decimal(12,2)");
+        builder.Entity<CategoryReport>().Property(r => r.ProductosBajoStock).IsRequired();
         builder.Entity<CategoryReport>().ToTable("category_reports");
 
         // Reports - StockAverageReport
         builder.Entity<StockAverageReport>().HasKey(r => r.Id);
         builder.Entity<StockAverageReport>().Property(r => r.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Entity<StockAverageReport>().Property(r => r.Categoria).IsRequired().HasMaxLength(100);
-        builder.Entity<StockAverageReport>().Property(r => r.Producto).IsRequired().HasMaxLength(100);
-        builder.Entity<StockAverageReport>().Property(r => r.StockPromedio).HasColumnType("decimal(10,2)");
-        builder.Entity<StockAverageReport>().Property(r => r.StockIdeal).IsRequired();
-        builder.Entity<StockAverageReport>().Property(r => r.Estado).IsRequired().HasMaxLength(50);
+        builder.Entity<StockAverageReport>().Property(r => r.CategoryId).IsRequired();
+        builder.Entity<StockAverageReport>().Property(r => r.CategoriaNombre).IsRequired().HasMaxLength(100);
         builder.Entity<StockAverageReport>().Property(r => r.FechaConsulta).IsRequired();
+        builder.Entity<StockAverageReport>().Property(r => r.StockPromedioReal).HasColumnType("decimal(10,2)");
+        builder.Entity<StockAverageReport>().Property(r => r.StockMinimoPromedio).IsRequired();
+        builder.Entity<StockAverageReport>().Property(r => r.TotalProductos).IsRequired();
+        builder.Entity<StockAverageReport>().Property(r => r.ProductosBajoStock).IsRequired();
+        builder.Entity<StockAverageReport>().Property(r => r.PorcentajeBajoStock).HasColumnType("decimal(5,2)");
         builder.Entity<StockAverageReport>().ToTable("stock_average_reports");
 
         
@@ -220,5 +264,52 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<ComboItem>().ToTable("combo_items");
+
+        // Configuración de Sales Module
+
+        // Sales
+        builder.Entity<Sale>().HasKey(s => s.Id);
+        builder.Entity<Sale>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Sale>().Property(s => s.ProductId).IsRequired();
+        builder.Entity<Sale>().Property(s => s.ProductName).IsRequired().HasMaxLength(200);
+        builder.Entity<Sale>().Property(s => s.CategoryName).HasMaxLength(100);
+        builder.Entity<Sale>().Property(s => s.SaleDate).IsRequired();
+        builder.Entity<Sale>().OwnsOne(s => s.Quantity, q =>
+        {
+            q.Property(p => p.Value).HasColumnName("Quantity").IsRequired();
+        });
+
+        builder.Entity<Sale>().OwnsOne(s => s.UnitPrice, up =>
+        {
+            up.Property(p => p.Value).HasColumnName("UnitPrice").HasColumnType("decimal(10,2)").IsRequired();
+        });
+        builder.Entity<Sale>().Property(s => s.CustomerName).IsRequired().HasMaxLength(200);
+        builder.Entity<Sale>().Property(s => s.Notes).HasMaxLength(500);
+
+        builder.Entity<Sale>().Ignore(s => s.TotalAmount); // Propiedad calculada
+
+        // ⭐ NUEVOS campos para combos
+        builder.Entity<Sale>().Property(s => s.ComboId);
+        builder.Entity<Sale>().Property(s => s.ComboName).HasColumnType("varchar(200)");
+
+        builder.Entity<Sale>().ToTable("sales");
+
+        // Índices para mejor performance en ventas
+        builder.Entity<Sale>()
+            .HasIndex(s => s.ProductId)
+            .HasDatabaseName("IX_Sales_ProductId");
+
+        builder.Entity<Sale>()
+            .HasIndex(s => s.SaleDate)
+            .HasDatabaseName("IX_Sales_SaleDate");
+
+        builder.Entity<Sale>()
+            .HasIndex(s => s.CustomerName)
+            .HasDatabaseName("IX_Sales_CustomerName");
+
+        // ⨳ NUEVO: Índice para combos
+        builder.Entity<Sale>()
+            .HasIndex(s => s.ComboId)
+            .HasDatabaseName("IX_Sales_ComboId");
     }
 }

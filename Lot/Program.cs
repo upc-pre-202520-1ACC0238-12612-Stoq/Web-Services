@@ -29,6 +29,11 @@ using Lot.Reports.Application.Internal.CommandServices;
 using Lot.Reports.Infrastructure.Persistence.EFC.Repositories;
 using Lot.Reports.Application.Internal.QueryServices;
 
+using Lot.Sales.Domain.Repositories;
+using Lot.Sales.Domain.Services;
+using Lot.Sales.Application.Internal.CommandServices;
+using Lot.Sales.Infrastructure.Persistence.EFC.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -211,9 +216,14 @@ builder.Services.AddScoped<ICategoryReportQueryService, CategoryReportQueryServi
 builder.Services.AddScoped<IStockAverageReportRepository, StockAverageReportRepository>();
 builder.Services.AddScoped<ICategoryReportRepository, CategoryReportRepository>();
 
+// Sales Bounded Context
+builder.Services.AddScoped<ISaleCommandService, SaleCommandService>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+
 // AlertStockManagement Bounded Context
 builder.Services.AddScoped<IInventoryReadRepository, InventoryReadRepository>();
-builder.Services.AddScoped<StockAlertQueryService>();
+builder.Services.AddScoped<IStockAlertReadRepository, InventoryReadRepository>();
+builder.Services.AddScoped<IStockAlertQueryService, StockAlertQueryService>();
 
 Console.WriteLine("Construyendo la aplicación...");
 var app = builder.Build();

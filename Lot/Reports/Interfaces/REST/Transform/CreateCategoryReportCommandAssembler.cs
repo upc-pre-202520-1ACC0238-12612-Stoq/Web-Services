@@ -7,14 +7,8 @@ namespace Lot.Reports.Interfaces.REST.Transform;
 
 public static class CreateCategoryReportCommandAssembler
 {
-    public static CreateCategoryReportCommand ToCommand(CreateCategoryReportResource  resource)
+    public static CreateCategoryReportCommand ToCommand(CreateCategoryReportResource resource)
     {
-        return new CreateCategoryReportCommand(
-            resource.Categoria,
-            resource.Producto,
-            resource.FechaConsulta,
-            resource.PrecioUnitario,
-            resource.Cantidad
-        );
+        return new CreateCategoryReportCommand(resource.CategoryId);
     }
 }

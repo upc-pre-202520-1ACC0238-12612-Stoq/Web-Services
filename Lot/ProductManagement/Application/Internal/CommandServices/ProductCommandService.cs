@@ -35,8 +35,10 @@ public class ProductCommandService(
                 productRepository.Update(product);
                 await unitOfWork.CompleteAsync();
             }
-            
-            return product;
+
+            // Recargar el producto con sus relaciones para obtener Category y Unit
+            var productWithRelations = await productRepository.FindProductWithRelationsAsync(product.Id);
+            return productWithRelations;
         }
         catch (Exception ex)
         {
@@ -83,7 +85,10 @@ public class ProductCommandService(
         {
             productRepository.Update(product);
             await unitOfWork.CompleteAsync();
-            return product;
+
+            // Recargar el producto con sus relaciones para obtener Category y Unit actualizados
+            var productWithRelations = await productRepository.FindProductWithRelationsAsync(product.Id);
+            return productWithRelations;
         }
         catch (Exception)
         {

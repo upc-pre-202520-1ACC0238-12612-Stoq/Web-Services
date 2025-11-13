@@ -18,7 +18,10 @@
       "Bash(taskkill:*)",
       "WebSearch",
       "WebFetch(domain:stackoverflow.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(tasklist:*)",
+      "Bash(Stop-Process -Id 33104 -Force)",
+      "Bash(tskill:*)"
     ],
     "deny": [],
     "ask": []

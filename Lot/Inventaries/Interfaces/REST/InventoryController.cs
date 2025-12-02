@@ -50,7 +50,7 @@ public class InventoryController : ControllerBase
 
         var response = new InventoryGeneralResource
         {
-            Productos = products.Select(p => InventoryByProductResourceAssembler.ToCommandFromResource(p)).ToList(),
+            Productos = products.Select(p => InventoryByProductResourceAssembler.ToResourceFromEntity(p)).ToList(),
             Lotes = batches.Select(b => InventoryByBatchResourceAssembler.ToResource(b)).ToList(),
         };
 
@@ -62,11 +62,34 @@ public class InventoryController : ControllerBase
 
     [HttpPost("by-product")]
     [SwaggerOperation("Crear Inventario por Producto", OperationId = "CreateInventoryByProduct")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Creado correctamente.", typeof(InventoryByProduct))]
-    public async Task<IActionResult> CreateByProduct([FromBody] CreateInventoryByProductCommand command)
+    [SwaggerResponse(StatusCodes.Status201Created, "Inventario por producto creado correctamente.", typeof(InventoryByProductResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    public async Task<IActionResult> CreateByProduct([FromBody] CreateInventoryByProductResource resource)
     {
-        var result = await _productCommandService.Handle(command);
-        return Ok(result);
+        try
+        {
+            // Transform Resource → Command siguiendo el patrón DDD
+            var command = CreateInventoryByProductCommandAssembler.ToCommandFromResource(resource);
+
+            // Manejar el Command a través del Application Service
+            var result = await _productCommandService.Handle(command);
+
+            if (result == null)
+                return BadRequest("No se pudo crear el inventario. Verifique los datos proporcionados.");
+
+            // Transform Entity → Resource para la respuesta
+            var responseResource = InventoryByProductResourceAssembler.ToResourceFromEntity(result);
+
+            return CreatedAtAction(nameof(GetByProductById), new { id = result.Id }, responseResource);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 
     [HttpGet("by-product")]
@@ -78,25 +101,31 @@ public class InventoryController : ControllerBase
         [FromQuery] DateTime? fechaEntrada,
         [FromQuery] int? stockMin)
     {
-        var result = await _productQueryService.GetAllAsync();
+        var entities = await _productQueryService.GetAllAsync();
+        var resources = entities.Select(InventoryByProductResourceAssembler.ToResourceFromEntity);
+
         if (!string.IsNullOrEmpty(categoria))
-            result = result.Where(x => x.Categoria == categoria);
+            resources = resources.Where(x => x.CategoriaNombre == categoria);
         if (!string.IsNullOrEmpty(producto))
-            result = result.Where(x => x.Producto == producto);
+            resources = resources.Where(x => x.ProductoNombre == producto);
         if (fechaEntrada.HasValue)
-            result = result.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
+            resources = resources.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
         if (stockMin.HasValue)
-            result = result.Where(x => x.StockMinimo <= stockMin.Value);
-        return Ok(result);
+            resources = resources.Where(x => x.StockMinimo <= stockMin.Value);
+        return Ok(resources);
     }
 
     [HttpGet("by-product/{id}")]
     [SwaggerOperation("Obtener Inventario por Producto por ID", OperationId = "GetInventoryByProductById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByProduct))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByProductResource))]
     public async Task<IActionResult> GetByProductById(int id)
     {
         var result = await _productQueryService.GetByIdAsync(id);
-        return result == null ? NotFound() : Ok(result);
+        if (result == null) return NotFound();
+
+        // ✅ Transformar Entity a Resource enriquecido
+        var resource = InventoryByProductResourceAssembler.ToResourceFromEntity(result);
+        return Ok(resource);
     }
 
     [HttpDelete("by-product/{id}")]
@@ -114,11 +143,34 @@ public class InventoryController : ControllerBase
 
     [HttpPost("by-batch")]
     [SwaggerOperation("Crear Inventario por Lote", OperationId = "CreateInventoryByBatch")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Creado correctamente.", typeof(InventoryByBatch))]
-    public async Task<IActionResult> CreateByBatch([FromBody] CreateInventoryByBatchCommand command)
+    [SwaggerResponse(StatusCodes.Status201Created, "Inventario por lote creado correctamente.", typeof(InventoryByBatchResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    public async Task<IActionResult> CreateByBatch([FromBody] CreateInventoryByBatchResource resource)
     {
-        var result = await _batchCommandService.Handle(command);
-        return Ok(result);
+        try
+        {
+            // Transform Resource → Command siguiendo el patrón DDD
+            var command = CreateInventoryByBatchCommandAssembler.ToCommandFromResource(resource);
+
+            // Manejar el Command a través del Application Service
+            var result = await _batchCommandService.Handle(command);
+
+            if (result == null)
+                return BadRequest("No se pudo crear el inventario por lote. Verifique los datos proporcionados.");
+
+            // Transform Entity → Resource para la respuesta
+            var responseResource = InventoryByBatchResourceAssembler.ToResource(result);
+
+            return CreatedAtAction(nameof(GetByBatchById), new { id = result.Id }, responseResource);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 
     [HttpGet("by-batch")]
@@ -131,28 +183,36 @@ public class InventoryController : ControllerBase
         [FromQuery] int? cantidad,
         [FromQuery] decimal? precio)
     {
-        var result = await _batchQueryService.Handle(new GetInventoryByBatchQuery());
+        var entities = await _batchQueryService.Handle(new GetInventoryByBatchQuery());
+        var resources = entities.Select(InventoryByBatchResourceAssembler.ToResource);
+
         if (!string.IsNullOrEmpty(producto))
-            result = result.Where(x => x.Producto == producto);
+            resources = resources.Where(x => x.ProductoNombre == producto);
         if (!string.IsNullOrEmpty(proveedor))
-            result = result.Where(x => x.Proveedor == proveedor);
+            resources = resources.Where(x => x.Proveedor == proveedor);
         if (fechaEntrada.HasValue)
-            result = result.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
+            resources = resources.Where(x => x.FechaEntrada.Date == fechaEntrada.Value.Date);
         if (cantidad.HasValue)
-            result = result.Where(x => x.Cantidad == cantidad.Value);
+            resources = resources.Where(x => x.Cantidad == cantidad.Value);
         if (precio.HasValue)
-            result = result.Where(x => x.Precio == precio.Value);
-        return Ok(result);
+            resources = resources.Where(x => x.Precio == precio.Value);
+        return Ok(resources);
     }
 
     [HttpGet("by-batch/{id}")]
     [SwaggerOperation("Obtener Inventario por Lote por ID", OperationId = "GetInventoryByBatchById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByBatch))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Inventario encontrado.", typeof(InventoryByBatchResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
     public async Task<IActionResult> GetByBatchById(int id)
     {
-        var list = await _batchQueryService.Handle(new GetInventoryByBatchQuery());
-        var found = list.FirstOrDefault(i => i.Id == id);
-        return found == null ? NotFound() : Ok(found);
+        var result = await _batchQueryService.GetByIdAsync(id);
+
+        if (result == null)
+            return NotFound();
+
+        // Transform Entity → Resource para la respuesta
+        var resource = InventoryByBatchResourceAssembler.ToResource(result);
+        return Ok(resource);
     }
 
     [HttpDelete("by-batch/{id}")]

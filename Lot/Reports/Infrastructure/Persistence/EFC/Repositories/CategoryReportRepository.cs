@@ -12,10 +12,9 @@ namespace Lot.Reports.Infrastructure.Persistence.EFC.Repositories;
 public class CategoryReportRepository(AppDbContext context)
     : BaseRepository<CategoryReport>(context), ICategoryReportRepository
 {
-    public async Task<CategoryReport> AddAsync(CategoryReport report)
+    public async Task AddAsync(CategoryReport report)
     {
         await Context.Set<CategoryReport>().AddAsync(report);
-        return report;
     }
 
     public async Task<IEnumerable<CategoryReport>> FindAllAsync()

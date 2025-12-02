@@ -4,21 +4,27 @@ using Lot.Inventaries.Interfaces.REST.Resources;
 
 namespace Lot.Inventaries.Interfaces.REST.Transform;
 
+/// <summary>
+/// Assembler para transformar Entities a Resources enriquecidos.
+/// Convierte Entity a Resource usando datos de la relación FK con Products.
+/// </summary>
 public static class InventoryByProductResourceAssembler
 {
-    public static InventoryByProductResource ToCommandFromResource(InventoryByProduct entity)
+    public static InventoryByProductResource ToResourceFromEntity(InventoryByProduct entity)
     {
         return new InventoryByProductResource
         {
             Id = entity.Id,
-            Categoria = entity.Categoria,
-            Producto = entity.Producto,
+            ProductoId = entity.ProductoId,
+            ProductoNombre = entity.Product?.Name ?? string.Empty,
+            CategoriaNombre = entity.Product?.Category?.Name ?? string.Empty,
+            UnidadNombre = entity.Product?.Unit?.Name ?? string.Empty,
+            UnidadAbreviacion = entity.Product?.Unit?.Abbreviation ?? string.Empty,
+
             FechaEntrada = entity.FechaEntrada,
             Cantidad = entity.Cantidad,
             Precio = entity.Precio,
-            StockMinimo = entity.StockMinimo,
-            UnidadMedida = entity.UnidadMedida
+            StockMinimo = entity.StockMinimo
         };
-
     }
 }

@@ -18,4 +18,10 @@ public class InventoryByBatchQueryService : IInventoryByBatchQueryService
     {
         return await _repository.ListAsync();
     }
+
+    public async Task<InventoryByBatch?> GetByIdAsync(int id)
+    {
+        // Buscar eficientemente por ID en lugar de cargar todos los registros
+        return await _repository.FindByIdAsync(id);
+    }
 }

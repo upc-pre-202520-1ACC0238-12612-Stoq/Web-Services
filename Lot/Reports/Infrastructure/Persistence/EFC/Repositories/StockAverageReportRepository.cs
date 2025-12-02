@@ -12,10 +12,9 @@ namespace Lot.Reports.Infrastructure.Persistence.EFC.Repositories;
 public class StockAverageReportRepository(AppDbContext context)
     : BaseRepository<StockAverageReport>(context), IStockAverageReportRepository
 {
-    public async Task<StockAverageReport> AddAsync(StockAverageReport report)
+    public async Task AddAsync(StockAverageReport report)
     {
         await Context.Set<StockAverageReport>().AddAsync(report);
-        return report;
     }
 
     public async Task<IEnumerable<StockAverageReport>> FindAllAsync()

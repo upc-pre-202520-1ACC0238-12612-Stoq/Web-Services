@@ -3,9 +3,11 @@ namespace Lot.Reports.Interfaces.REST.Resources;
 
 public record CategoryReportResource(
     int Id,
-    string Categoria,
-    string Producto,
+    int CategoryId,
+    string CategoriaNombre,
     DateTime FechaConsulta,
-    decimal PrecioUnitario,
-    int Cantidad
+    int TotalProductos,
+    int StockTotal,
+    decimal ValorTotalInventario,
+    int ProductosBajoStock
 );

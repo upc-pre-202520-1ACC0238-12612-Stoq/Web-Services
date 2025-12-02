@@ -34,8 +34,10 @@ public class ComboCommandService(
                 comboRepository.Update(combo);
                 await unitOfWork.CompleteAsync();
             }
-            
-            return combo;
+
+            // Recargar el combo con sus relaciones para obtener Product details
+            var comboWithRelations = await comboRepository.FindComboWithRelationsAsync(combo.Id);
+            return comboWithRelations;
         }
         catch (Exception ex)
         {
@@ -73,7 +75,10 @@ public class ComboCommandService(
         {
             comboRepository.Update(combo);
             await unitOfWork.CompleteAsync();
-            return combo;
+
+            // Recargar el combo con sus relaciones para obtener Product details actualizados
+            var comboWithRelations = await comboRepository.FindComboWithRelationsAsync(combo.Id);
+            return comboWithRelations;
         }
         catch (Exception ex)
         {

@@ -11,11 +11,13 @@ public static class CategoryReportResourceAssembler
     {
         return new CategoryReportResource(
             report.Id,
-            report.Categoria,
-            report.Producto,
+            report.CategoryId,
+            report.CategoriaNombre,
             report.FechaConsulta,
-            report.PrecioUnitario,
-            report.Cantidad
+            report.TotalProductos,
+            report.StockTotal,
+            report.ValorTotalInventario,
+            report.ProductosBajoStock
         );
     }
 }

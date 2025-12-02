@@ -3,31 +3,27 @@ using Lot.Inventaries.Domain.Model.ValueOjbects;
 
 namespace Lot.Inventaries.Domain.Model.Commands;
 
+/// <summary>
+/// Command para crear inventario por producto.
+/// Conecta con Products mediante foreign key (ProductoId).
+/// </summary>
 public class CreateInventoryByProductCommand
 {
-    public string Categoria { get; }
-    public string Producto { get; }
-    public DateTime FechaEntrada { get; }
+    public int ProductoId { get; }           // FK → Products
+    // ❌ FechaEntrada eliminada - ahora es automática
     public Cantidad Cantidad { get; }
     public Precio Precio { get; }
     public StockMinimo StockMinimo { get; }
-    public Unidad UnidadMedida { get; }
 
     public CreateInventoryByProductCommand(
-        string categoria,
-        string producto,
-        DateTime fechaEntrada,
+        int productoId,
         Cantidad cantidad,
         Precio precio,
-        StockMinimo stockMinimo,
-        Unidad unidadMedida)
+        StockMinimo stockMinimo)
     {
-        Categoria = categoria;
-        Producto = producto;
-        FechaEntrada = fechaEntrada;
+        ProductoId = productoId;
         Cantidad = cantidad;
         Precio = precio;
         StockMinimo = stockMinimo;
-        UnidadMedida = unidadMedida;
     }
 }

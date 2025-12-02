@@ -10,10 +10,13 @@ public static class StockAlertTransform
         return new StockAlertResource
         {
             ProductName = item.ProductName,
+            CategoryName = item.CategoryName,
             Quantity = item.Quantity,
             MinStock = item.MinStock,
+            Price = item.Price,
             EntryDate = item.EntryDate,
-            IsLowStock = item.IsLowStock
+            StockDeficit = item.StockDeficit,
+            AlertLevel = item.AlertLevel
         };
     }
 }

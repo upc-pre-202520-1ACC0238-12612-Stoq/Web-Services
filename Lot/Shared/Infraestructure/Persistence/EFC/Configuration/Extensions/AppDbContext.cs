@@ -89,6 +89,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.Entity<InventoryByBatch>().ToTable("inventory_by_batch");
 
+        // Configuración de Branch (Sucursales)
+        builder.Entity<Branch>().HasKey(b => b.Id);
+        builder.Entity<Branch>().Property(b => b.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Branch>().Property(b => b.Name).IsRequired().HasMaxLength(200);
+        builder.Entity<Branch>().Property(b => b.Type).IsRequired().HasMaxLength(50);
+        builder.Entity<Branch>().Property(b => b.Address).IsRequired().HasMaxLength(500);
+        builder.Entity<Branch>().Property(b => b.Latitude).IsRequired().HasColumnType("decimal(10,8)");
+        builder.Entity<Branch>().Property(b => b.Longitude).IsRequired().HasColumnType("decimal(11,8)");
+        builder.Entity<Branch>().Property(b => b.StockTotal).IsRequired().HasDefaultValue(0);
+        builder.Entity<Branch>().Property(b => b.CreatedAt).IsRequired().HasColumnType("timestamp(6)");
+        builder.Entity<Branch>().Property(b => b.UpdatedAt).HasColumnType("timestamp(6)");
+        builder.Entity<Branch>().ToTable("branches");
 
         
         // Configuración de ProductManagement entities

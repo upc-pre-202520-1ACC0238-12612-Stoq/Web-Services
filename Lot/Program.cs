@@ -32,6 +32,7 @@ using Lot.Reports.Application.Internal.QueryServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using Pomelo.EntityFrameworkCore.MySql;
 using Lot.AlertStockManagement.Application.Internal.QueryServices;
 using Lot.AlertStockManagement.Domain.Repositories;
 using Lot.AlertStockManagement.Infraestructure.Persistence.EFC.Repositories;
@@ -117,12 +118,12 @@ if (connectionString == null) throw new InvalidOperationException("Connection st
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (builder.Environment.IsDevelopment())
-        options.UseNpgsql(connectionString)
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))  // ← MySQL
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
     else if (builder.Environment.IsProduction())
-        options.UseNpgsql(connectionString)
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))  // ← MySQL
             .LogTo(Console.WriteLine, LogLevel.Error);
 });
 
@@ -176,12 +177,15 @@ builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Toke
 // Inventaries Bounded Context
 builder.Services.AddScoped<IInventoryByProductRepository, InventoryByProductRepository>();
 builder.Services.AddScoped<IInventoryByBatchRepository, InventoryByBatchRepository>();
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 
 builder.Services.AddScoped<IInventoryByProductCommandService, InventoryByProductCommandService>();
 builder.Services.AddScoped<IInventoryByBatchCommandService, InventoryByBatchCommandService>();
+builder.Services.AddScoped<IBranchCommandService, BranchCommandService>();
 
 builder.Services.AddScoped<IInventoryByProductQueryService, InventoryByProductQueryService>();
 builder.Services.AddScoped<IInventoryByBatchQueryService, InventoryByBatchQueryService>();
+builder.Services.AddScoped<IBranchQueryService, BranchQueryService>();
 
 // ProductManagement Bounded Context
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

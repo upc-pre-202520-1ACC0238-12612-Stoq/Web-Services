@@ -37,7 +37,7 @@ using Lot.Sales.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;
-using Pomelo.EntityFrameworkCore.MySql;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Lot.AlertStockManagement.Application.Internal.QueryServices;
 using Lot.AlertStockManagement.Domain.Repositories;
 using Lot.AlertStockManagement.Infraestructure.Persistence.EFC.Repositories;
@@ -123,12 +123,12 @@ if (connectionString == null) throw new InvalidOperationException("Connection st
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (builder.Environment.IsDevelopment())
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))  // ← MySQL
+        options.UseNpgsql(connectionString)  // ← PostgreSQL
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
     else if (builder.Environment.IsProduction())
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))  // ← MySQL
+        options.UseNpgsql(connectionString)  // ← PostgreSQL
             .LogTo(Console.WriteLine, LogLevel.Error);
 });
 

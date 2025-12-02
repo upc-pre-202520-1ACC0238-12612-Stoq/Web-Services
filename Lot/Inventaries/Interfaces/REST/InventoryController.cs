@@ -369,3 +369,4 @@ public class InventoryController : ControllerBase
         }
     }
 }
+    

@@ -7,5 +7,6 @@ namespace Lot.Inventaries.Domain.Services;
 public interface IInventoryByProductCommandService
 {
     Task<InventoryByProduct?> Handle(CreateInventoryByProductCommand command);
+    Task<InventoryByProduct?> Handle(UpdateInventoryByProductCommand command);
     Task<bool> DeleteAsync(int id);
 }

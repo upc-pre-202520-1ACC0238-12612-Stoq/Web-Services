@@ -80,4 +80,42 @@ public class InventoryByProduct
 
         Cantidad += quantity;
     }
+
+    /// <summary>
+    /// Actualiza los campos del inventario por producto.
+    /// Solo actualiza si los valores son diferentes al actual.
+    /// Sigue el patrón de Branch.Update().
+    /// </summary>
+    public void Update(
+        int? productoId = null,
+        Cantidad? cantidad = null,
+        Precio? precio = null,
+        StockMinimo? stockMinimo = null)
+    {
+        // Actualizar ProductoId solo si es diferente
+        if (productoId.HasValue && productoId.Value != ProductoId)
+        {
+            ProductoId = productoId.Value;
+        }
+
+        // Actualizar Cantidad solo si es diferente
+        if (cantidad != null && cantidad.Value != Cantidad)
+        {
+            Cantidad = cantidad.Value;
+            // StockBajo se recalcula automáticamente
+        }
+
+        // Actualizar Precio solo si es diferente
+        if (precio != null && precio.Value != Precio)
+        {
+            Precio = precio.Value;
+        }
+
+        // Actualizar StockMinimo solo si es diferente
+        if (stockMinimo != null && stockMinimo.Value != StockMinimo)
+        {
+            StockMinimo = stockMinimo.Value;
+            // StockBajo se recalcula automáticamente
+        }
+    }
 }

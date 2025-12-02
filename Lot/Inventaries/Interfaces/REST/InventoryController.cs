@@ -6,6 +6,7 @@ using Lot.Inventaries.Domain.Model.Aggregates;
 using Lot.Inventaries.Domain.Model.Commands;
 using Lot.Inventaries.Domain.Model.Queries;
 using Lot.Inventaries.Domain.Services;
+using Lot.Inventaries.Domain.Model.ValueOjbects;
 using Lot.Inventaries.Interfaces.REST.Resources;
 using Lot.Inventaries.Interfaces.REST.Transform;
 using Lot.IAM.Infrastructure.Authorization; 
@@ -224,5 +225,135 @@ public class InventoryController : ControllerBase
         var deleted = await _batchCommandService.DeleteAsync(id);
         if (!deleted) return NotFound();
         return NoContent();
+    }
+
+    // ================= UPDATE INVENTORY BY PRODUCT =================
+
+    /// <summary>
+    /// Actualiza completamente un inventario por producto existente.
+    /// Sigue el patrón de BranchController.UpdateBranch().
+    /// </summary>
+    [HttpPut("by-product/{id}")]
+    [SwaggerOperation("Actualizar Inventario por Producto", OperationId = "UpdateInventoryByProduct")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Inventario actualizado correctamente.", typeof(InventoryByProductResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    public async Task<IActionResult> UpdateByProduct(int id, [FromBody] UpdateInventoryByProductResource resource)
+    {
+        try
+        {
+            // 1. Transform Resource → Command (patrón existente)
+            var command = UpdateInventoryByProductCommandAssembler.ToCommandFromResource(id, resource);
+
+            // 2. Execute Command through Application Service
+            var result = await _productCommandService.Handle(command);
+
+            if (result == null)
+                return NotFound("Inventario no encontrado.");
+
+            // 3. Transform Entity → Resource para respuesta (patrón existente)
+            var responseResource = InventoryByProductResourceAssembler.ToResourceFromEntity(result);
+
+            return Ok(responseResource);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Actualiza específicamente el stock, precio y stock mínimo de un producto.
+    /// Endpoint PATCH para actualizaciones parciales de stock.
+    /// Solo actualiza los campos proporcionados en el request.
+    /// </summary>
+    [HttpPatch("by-product/{id}/stock")]
+    [SwaggerOperation("Actualizar Stock de Producto", OperationId = "UpdateProductStock")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Stock actualizado correctamente.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    public async Task<IActionResult> UpdateProductStock(int id, [FromBody] UpdateStockResource stockResource)
+    {
+        try
+        {
+            // Validar que al menos un campo sea proporcionado
+            if (!stockResource.Cantidad.HasValue &&
+                !stockResource.Precio.HasValue &&
+                !stockResource.StockMinimo.HasValue)
+            {
+                return BadRequest("Debe proporcionar al menos un campo para actualizar (cantidad, precio o stockMinimo).");
+            }
+
+            // 1. Crear command específico para stock parcial - solo con campos proporcionados
+            Cantidad? cantidad = null;
+            Precio? precio = null;
+            StockMinimo? stockMinimo = null;
+
+            if (stockResource.Cantidad.HasValue)
+            {
+                if (stockResource.Cantidad.Value <= 0)
+                    return BadRequest("La cantidad debe ser mayor que cero.");
+                cantidad = new Cantidad(stockResource.Cantidad.Value);
+            }
+
+            if (stockResource.Precio.HasValue)
+            {
+                if (stockResource.Precio.Value < 0)
+                    return BadRequest("El precio no puede ser negativo.");
+                precio = new Precio(stockResource.Precio.Value);
+            }
+
+            if (stockResource.StockMinimo.HasValue)
+            {
+                if (stockResource.StockMinimo.Value < 0)
+                    return BadRequest("El stock mínimo no puede ser negativo.");
+                stockMinimo = new StockMinimo(stockResource.StockMinimo.Value);
+            }
+
+            // 2. Crear command solo con los valores a actualizar
+            var command = new UpdateInventoryByProductCommand(
+                id: id,
+                productoId: null, // No se permite cambiar producto en endpoint de stock
+                cantidad: cantidad,
+                precio: precio,
+                stockMinimo: stockMinimo
+            );
+
+            // 3. Execute Command
+            var result = await _productCommandService.Handle(command);
+
+            if (result == null)
+                return NotFound("Inventario no encontrado.");
+
+            // 4. Response con información relevante del stock actualizado
+            return Ok(new {
+                message = "Stock actualizado correctamente",
+                id = result.Id,
+                productoId = result.ProductoId,
+                productoNombre = result.Product?.Name,
+                cantidad = result.Cantidad,
+                precio = result.Precio,
+                stockMinimo = result.StockMinimo,
+                stockBajo = result.StockBajo,
+                total = result.Cantidad * result.Precio,
+                camposActualizados = new {
+                    cantidad = stockResource.Cantidad.HasValue,
+                    precio = stockResource.Precio.HasValue,
+                    stockMinimo = stockResource.StockMinimo.HasValue
+                }
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 }

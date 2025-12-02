@@ -50,6 +50,8 @@ public class CombosController(
     [SwaggerOperation("Crear Combo", "Crea un nuevo combo (kit).", OperationId = "CreateCombo")]
     [SwaggerResponse(201, "El combo fue creado.", typeof(ComboResource))]
     [SwaggerResponse(400, "El combo no fue creado.")]
+    [SwaggerResponse(403, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> CreateCombo(CreateComboResource resource)
     {
         try

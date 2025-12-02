@@ -65,6 +65,8 @@ public class InventoryController : ControllerBase
     [SwaggerOperation("Crear Inventario por Producto", OperationId = "CreateInventoryByProduct")]
     [SwaggerResponse(StatusCodes.Status201Created, "Inventario por producto creado correctamente.", typeof(InventoryByProductResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> CreateByProduct([FromBody] CreateInventoryByProductResource resource)
     {
         try
@@ -133,6 +135,8 @@ public class InventoryController : ControllerBase
     [SwaggerOperation("Eliminar Inventario por Producto por ID", OperationId = "DeleteInventoryByProductById")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Inventario eliminado.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> DeleteByProductById(int id)
     {
         var deleted = await _productCommandService.DeleteAsync(id);
@@ -146,6 +150,8 @@ public class InventoryController : ControllerBase
     [SwaggerOperation("Crear Inventario por Lote", OperationId = "CreateInventoryByBatch")]
     [SwaggerResponse(StatusCodes.Status201Created, "Inventario por lote creado correctamente.", typeof(InventoryByBatchResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> CreateByBatch([FromBody] CreateInventoryByBatchResource resource)
     {
         try
@@ -220,6 +226,8 @@ public class InventoryController : ControllerBase
     [SwaggerOperation("Eliminar Inventario por Lote por ID", OperationId = "DeleteInventoryByBatchById")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Inventario eliminado.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> DeleteByBatchById(int id)
     {
         var deleted = await _batchCommandService.DeleteAsync(id);
@@ -238,6 +246,8 @@ public class InventoryController : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "Inventario actualizado correctamente.", typeof(InventoryByProductResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> UpdateByProduct(int id, [FromBody] UpdateInventoryByProductResource resource)
     {
         try
@@ -276,6 +286,8 @@ public class InventoryController : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "Stock actualizado correctamente.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Inventario no encontrado.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos inválidos proporcionados.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> UpdateProductStock(int id, [FromBody] UpdateStockResource stockResource)
     {
         try

@@ -36,6 +36,8 @@ public class ProductsController(
     [SwaggerOperation("Crear Producto", "Crea un nuevo producto.", OperationId = "CreateProduct")]
     [SwaggerResponse(201, "El producto fue creado.", typeof(ProductResource))]
     [SwaggerResponse(400, "El producto no fue creado.")]
+    [SwaggerResponse(403, "Acceso denegado. Se requieren permisos de administrador.")]
+    [AuthorizeRoles("Administrator")]
     public async Task<IActionResult> CreateProduct(CreateProductResource resource)
     {
         try

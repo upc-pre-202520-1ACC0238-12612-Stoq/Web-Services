@@ -116,6 +116,7 @@ namespace Lot.IAM.Interfaces.REST
         )]
         [SwaggerResponse(200, "User role changed successfully", typeof(UserResource))]
         [SwaggerResponse(400, "Invalid request or user not found.")]
+        [SwaggerResponse(403, "Acceso denegado. Se requieren permisos de administrador.")]
         [SwaggerResponse(500, "Unexpected error while changing user role.")]
         [AuthorizeRoles("Administrator")]
         public async Task<ActionResult> ChangeUserRole([FromBody] ChangeUserRoleResource resource)
